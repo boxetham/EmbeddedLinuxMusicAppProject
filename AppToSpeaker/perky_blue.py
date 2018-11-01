@@ -10,8 +10,6 @@ import time
 import subprocess
 import shlex
 
-from mplayer import *
-
 from bluetooth import *
 
 class PerkyBlueServer:
@@ -19,8 +17,8 @@ class PerkyBlueServer:
     def playSong(self, target):
 	if target == 'Kalimba':
 		audiofile = target + '.mp3'
-		commandline = 'mplayer -slave -quiet -ao alsa:device=default=Set %s' % audiofile
-		proc = subprocess.Popen(shlex.split(commandline), stdin=PIPE)
+		commandline = 'mplayer -ac mad -slave -quiet -ao alsa:device=default=Set %s' % audiofile
+		proc = subprocess.Popen(shlex.split(commandline), stdin=subprocess.PIPE)
 
 		time.sleep(10)
 		#pause the music
@@ -32,7 +30,22 @@ class PerkyBlueServer:
 		#stop the music
 		proc.stdin.write('stop\n')
 
-	elif:
+	elif target == 'GoodLife':
+		audiofile = target + '.mp3'
+                commandline = 'mplayer -framedrop -slave -quiet -ao alsa:device=default=Set %s' % audiofile
+                proc = subprocess.Popen(shlex.split(commandline), stdin=subprocess.PIPE)
+
+                time.sleep(10)
+                #pause the music
+                proc.stdin.write('pause\n')
+                time.sleep(10)
+                #unpause the music
+                proc.stdin.write('pause\n')
+                time.sleep(10)
+                #stop the music
+                proc.stdin.write('stop\n')
+
+	else:
 		print 'unknown remote command'
 
 
