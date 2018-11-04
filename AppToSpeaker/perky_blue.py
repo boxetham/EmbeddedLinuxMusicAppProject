@@ -1,84 +1,80 @@
 #! /usr/bin/python
-#
-# Title:perky_blue.py
-# Description:
-# Development Environment:OS X 10.9.3/Python 2.7.7
-# Author:G.S. Cole (guycole at gmail dot com)
-#
+
 import gpio
 import time
 import subprocess
 import shlex
+import os
 
 from bluetooth import *
 
-class PerkyBlueServer:
+class MusicAppServer:
 
-    def playSong(self, target):
+    def playSong(self, target, client_sock):
 	if target == 'Kalimba':
 		audiofile = target + '.mp3'
 		commandline = 'mplayer -ac mad -slave -quiet -ao alsa:device=default=Set %s' % audiofile
 		proc = subprocess.Popen(shlex.split(commandline), stdin=subprocess.PIPE)
+		running = 1
+		paused = 0
 
-		time.sleep(10)
-		#pause the music
-		proc.stdin.write('pause\n')
-		time.sleep(10)
-		#unpause the music
-		proc.stdin.write('pause\n')
-		time.sleep(10)
-		#stop the music
-		proc.stdin.write('stop\n')
+		while (running):
+                        data = client_sock.recv(1024).strip()
+                        if len(data) == 0: break
+                        print("received [%s]" % data)
+                        client_sock.sendall('OK')
+
+                        if (data == 'stop'):
+                                proc.stdin.write('stop\n')
+                                running = 0
+
+                        elif ((data == 'pause') and (paused == 0)):
+                                proc.stdin.write('pause\n')
+                                paused = 1
+
+                        elif ((data == 'play') and (paused == 1)):
+                                proc.stdin.write('pause\n')
+                                paused = 0
+
 
 	elif target == 'GoodLife':
 		audiofile = target + '.mp3'
-                commandline = 'mplayer -framedrop -slave -quiet -ao alsa:device=default=Set %s' % audiofile
+		commandline = 'mplayer -speed 0.75 -cache 8192 -cache-min 99 -slave -quiet -ao alsa:device=default=Set %s' % audiofile
                 proc = subprocess.Popen(shlex.split(commandline), stdin=subprocess.PIPE)
+		running = 1
+		paused = 0
 
-                time.sleep(10)
-                #pause the music
-                proc.stdin.write('pause\n')
-                time.sleep(10)
-                #unpause the music
-                proc.stdin.write('pause\n')
-                time.sleep(10)
-                #stop the music
-                proc.stdin.write('stop\n')
+		while (running):
+			data = client_sock.recv(1024).strip()
+        	        if len(data) == 0: break
+        	       	print("received [%s]" % data)
+               		client_sock.sendall('OK')
+
+			if (data == 'stop'):
+				proc.stdin.write('stop\n')
+				running = 0
+
+			elif ((data == 'pause') and (paused == 0)):
+				proc.stdin.write('pause\n')
+				paused = 1
+
+			elif ((data == 'play') and (paused == 1)):
+				proc.stdin.write('pause\n')
+				paused = 0
+
+	elif ((target == 'pause') or (target == 'stop')):
+		print 'A song must be playing'
+
+	elif target == 'play':
+		print 'Select a song to play'
 
 	else:
 		print 'unknown remote command'
 
-
-
-
-
-
-
-    def toggleLed(self, target):
-	if target == 'green':
-		print 'toggle green'
-		self.green_led.toggleGpioValue()
-	elif target == 'red':
-		print 'toggle red'
-		self.red_led.toggleGpioValue()
-#        elif target == 'yellow':
-#		print 'toggle yellow'
-#		self.yellow_led.toggleGpioValue()
-	else:
-		print 'unknown remote command'
 
     def execute(self):
-	self.green_led = gpio.gpio(48)
-        self.green_led.setDirectionValue('out')
-        self.green_led.setGpioValue(0)
 
-	self.red_led = gpio.gpio(49)
-        self.red_led.setDirectionValue('out')
-        self.red_led.setGpioValue(0)
-
-#	self.yellow_led = gpio.gpio(60)
-#        self.yellow_led.setDirectionValue('out')
-#        self.yellow_led.setGpioValue(0)
+	os.system('bluetoothctl')
 
         service_uuid = "00001101-0000-1000-8000-00805F9B34FB"
 
@@ -102,8 +98,7 @@ class PerkyBlueServer:
                 print("received [%s]" % data)
                 client_sock.sendall('OK')
 
-                #self.toggleLed(data)
-		self.playSong(data)
+		self.playSong(data, client_sock)
         except IOError:
             pass
 
@@ -115,9 +110,8 @@ class PerkyBlueServer:
 
 print 'start'
 
-#
 if __name__ == '__main__':
-    server = PerkyBlueServer()
+    server = MusicAppServer()
     server.execute()
 
 print 'stop'
