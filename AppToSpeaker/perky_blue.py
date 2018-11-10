@@ -36,6 +36,11 @@ class MusicAppServer:
                                 proc.stdin.write('pause\n')
                                 paused = 0
 
+			elif (data == 'volume up'):
+				proc.stdin.write('volume +1\n')
+
+			elif (data == 'volume down'):
+                                proc.stdin.write('volume -1\n')
 
 	elif target == 'GoodLife':
 		audiofile = target + '.mp3'
@@ -62,6 +67,12 @@ class MusicAppServer:
 				proc.stdin.write('pause\n')
 				paused = 0
 
+			elif (data == 'volume up'):
+                                proc.stdin.write('volume +1\n')
+
+                        elif (data == 'volume down'):
+                                proc.stdin.write('volume -1\n')
+
 	elif target == 'Nocturne':
                 audiofile = target + '.mp3'
                 commandline = 'mplayer -af resample=48000:0:2 -slave -quiet -ao alsa:device=default=Set %s' % audiofile
@@ -87,6 +98,11 @@ class MusicAppServer:
                                 proc.stdin.write('pause\n')
                                 paused = 0
 
+			elif (data == 'volume up'):
+                                proc.stdin.write('volume +1\n')
+
+                        elif (data == 'volume down'):
+                                proc.stdin.write('volume -1\n')
 
 	elif ((target == 'pause') or (target == 'stop')):
 		print 'A song must be playing'
@@ -122,6 +138,13 @@ class MusicAppServer:
                         	elif ((data == 'play') and (paused == 1)):
                                 	proc.stdin.write('pause\n')
                                 	paused = 0
+
+				elif (data == 'volume up'):
+	                                proc.stdin.write('volume +1\n')
+
+	                        elif (data == 'volume down'):
+        	                        proc.stdin.write('volume -1\n')
+
 		else:
 			print 'ready for next command'
 
