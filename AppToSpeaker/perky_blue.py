@@ -151,6 +151,7 @@ class MusicAppServer:
 
     def execute(self):
 	# try to automatically make device bluetooth discoverable
+	os.system("echo 'discoverable yes\npairable yes\nquit' | bluetoothctl")
 
         service_uuid = "00001101-0000-1000-8000-00805F9B34FB"
 
