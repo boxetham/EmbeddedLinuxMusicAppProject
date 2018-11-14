@@ -15,18 +15,18 @@ class MusicAppServer:
 		audiofile = target + '.mp3'
 		commandline = 'mplayer -af resample=48000:0:2 -slave -quiet -ao alsa:device=default=Set %s' % audiofile
 		proc = subprocess.Popen(shlex.split(commandline), stdin=subprocess.PIPE)
-		running = 1
 		paused = 0
 
-		while (running):
+		while (proc.poll() is None):
                         data = client_sock.recv(1024).strip()
                         if len(data) == 0: break
                         print("received [%s]" % data)
                         client_sock.sendall('OK')
 
                         if (data == 'stop'):
-                                proc.stdin.write('stop\n')
-                                running = 0
+                                if (proc.poll() is None):
+					proc.stdin.write('stop\n')
+				break
 
                         elif ((data == 'pause') and (paused == 0)):
                                 proc.stdin.write('pause\n')
@@ -46,18 +46,18 @@ class MusicAppServer:
 		audiofile = target + '.mp3'
 		commandline = 'mplayer -af resample=48000:0:2 -slave -quiet -ao alsa:device=default=Set %s' % audiofile
                 proc = subprocess.Popen(shlex.split(commandline), stdin=subprocess.PIPE)
-		running = 1
 		paused = 0
 
-		while (running):
+		while (proc.poll() is None):
 			data = client_sock.recv(1024).strip()
         	        if len(data) == 0: break
         	       	print("received [%s]" % data)
                		client_sock.sendall('OK')
 
 			if (data == 'stop'):
-				proc.stdin.write('stop\n')
-				running = 0
+				if (proc.poll() is None):
+                                        proc.stdin.write('stop\n')
+                                break
 
 			elif ((data == 'pause') and (paused == 0)):
 				proc.stdin.write('pause\n')
@@ -77,18 +77,18 @@ class MusicAppServer:
                 audiofile = target + '.mp3'
                 commandline = 'mplayer -af resample=48000:0:2 -slave -quiet -ao alsa:device=default=Set %s' % audiofile
                 proc = subprocess.Popen(shlex.split(commandline), stdin=subprocess.PIPE)
-                running = 1
                 paused = 0
 
-                while (running):
+                while (proc.poll() is None):
                         data = client_sock.recv(1024).strip()
                         if len(data) == 0: break
                         print("received [%s]" % data)
                         client_sock.sendall('OK')
 
                         if (data == 'stop'):
-                                proc.stdin.write('stop\n')
-                                running = 0
+                                if (proc.poll() is None):
+                                        proc.stdin.write('stop\n')
+                                break
 
                         elif ((data == 'pause') and (paused == 0)):
                                 proc.stdin.write('pause\n')
@@ -118,18 +118,18 @@ class MusicAppServer:
 		if (os.path.isfile(audiofile)):
 			commandline = 'mplayer -af resample=48000:0:2 -slave -quiet -ao alsa:device=default=Set %s' % audiofile
 	                proc = subprocess.Popen(shlex.split(commandline), stdin=subprocess.PIPE)
-        	        running = 1
               		paused = 0
 
-	                while (running):
+	                while (proc.poll() is None):
 	                        data = client_sock.recv(1024).strip()
         	                if len(data) == 0: break
                         	print("received [%s]" % data)
                         	client_sock.sendall('OK')
 
                         	if (data == 'stop'):
-                                	proc.stdin.write('stop\n')
-                                	running = 0
+                                	if (proc.poll() is None):
+                                        	proc.stdin.write('stop\n')
+                                	break
 
                         	elif ((data == 'pause') and (paused == 0)):
                                 	proc.stdin.write('pause\n')
@@ -151,7 +151,7 @@ class MusicAppServer:
 
     def execute(self):
 	# try to automatically make device bluetooth discoverable
-	os.system("echo 'discoverable yes\npairable yes\nquit' | bluetoothctl")
+	#os.system("echo 'discoverable yes\npairable yes\nquit' | bluetoothctl")
 
         service_uuid = "00001101-0000-1000-8000-00805F9B34FB"
 
