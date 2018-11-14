@@ -7,4 +7,5 @@ pulseaudio --start
 
 sudo apt-get update
 sudo apt-get upgrade
+sudo apt-get install python-bluez
 sudo apt-get install build-essential python-dev libbluetooth-dev 
